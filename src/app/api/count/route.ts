@@ -9,14 +9,17 @@ interface State {
 
 const HOST = process.env["HOST"] ?? "https://stateful-counter-demo.vercel.app";
 
-function deriveState(state: State | undefined, buttonIndex: number) {
-  if (!state) {
+function deriveState(serializedState: string | undefined, buttonIndex: number) {
+  let state : State;
+  if (!serializedState) {
     state = {
       count: 0,
       incs: 0,
       decs: 0,
       clicks: 0,
     };
+  } else {
+    state = JSON.parse(decodeURIComponent(serializedState));
   }
   if (buttonIndex === 1) {
     state.count++;
