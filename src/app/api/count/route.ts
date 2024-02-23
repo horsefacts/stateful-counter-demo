@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from "next/server";
+
+interface State {
+  count: number;
+  incs: number;
+  decs: number;
+  clicks: number;
+}
+
+function deriveState(state: State | undefined, buttonIndex: number) {
+  if (!state) {
+    state = {
+      count: 0,
+      incs: 0,
+      decs: 0,
+      clicks: 0,
+    };
+  }
+  if (buttonIndex === 1) {
+    state.count++;
+    state.incs++;
+  }
+  if (buttonIndex === 2) {
+    state.count--;
+    state.decs++;
+  }
+  state.clicks++;
+  return state;
+}
+
+export async function POST(req: NextRequest) {
+  const {
+    untrustedData: { buttonIndex, state },
+  } = await req.json();
+
+  const newState = deriveState(state, buttonIndex);
+  const postUrl = `${process.env["HOST"]}/api/count`;
+  const imageUrl = `${process.env["HOST"]}/api/count?state=${encodeURIComponent(JSON.stringify(newState))}`;
+
+  let buttons = [
+    `<meta name="fc:frame:button:1" content="+" />`,
+  ];
+
+  if (newState.count > 0) {
+    buttons.push(`<meta name="fc:frame:button:2" content="-" />`);
+  }
+
+  return new NextResponse(
+    `<!DOCTYPE html>
+      <html>
+        <head>
+          <meta property="og:title" content="Stateful Counter" />
+          <meta property="og:image" content="${imageUrl}" />
+          <meta name="fc:frame" content="vNext" />
+          <meta name="fc:frame:image" content="${imageUrl}" />
+          <meta name="fc:frame:post_url" content="${postUrl}" />
+          ${buttons.join("\n")}
+        </head>
+        <body></body>
+      </html>`,
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "text/html",
+      },
+    },
+  );
+
+}
+
+export const GET = POST;
