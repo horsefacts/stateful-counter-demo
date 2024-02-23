@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-const HOST = process.env["HOST"] ?? "https://example.com";
+const HOST = process.env["HOST"] ?? "https://stateful-counter-demo.vercel.app";
 
 const postUrl = `${HOST}/api/count`;
 

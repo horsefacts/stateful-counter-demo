@@ -7,6 +7,8 @@ interface State {
   clicks: number;
 }
 
+const HOST = process.env["HOST"] ?? "https://stateful-counter-demo.vercel.app";
+
 function deriveState(state: State | undefined, buttonIndex: number) {
   if (!state) {
     state = {
@@ -34,8 +36,8 @@ export async function POST(req: NextRequest) {
   } = await req.json();
 
   const newState = deriveState(state, buttonIndex);
-  const postUrl = `${process.env["HOST"]}/api/count`;
-  const imageUrl = `${process.env["HOST"]}/api/count?state=${encodeURIComponent(JSON.stringify(newState))}`;
+  const postUrl = `${HOST}/api/count`;
+  const imageUrl = `${HOST}/api/count?state=${encodeURIComponent(JSON.stringify(newState))}`;
 
   let buttons = [
     `<meta name="fc:frame:button:1" content="+" />`,
@@ -54,6 +56,7 @@ export async function POST(req: NextRequest) {
           <meta name="fc:frame" content="vNext" />
           <meta name="fc:frame:image" content="${imageUrl}" />
           <meta name="fc:frame:post_url" content="${postUrl}" />
+          <meta name="fc:frame:state" content="${encodeURIComponent(JSON.stringify(newState))}" />
           ${buttons.join("\n")}
         </head>
         <body></body>
