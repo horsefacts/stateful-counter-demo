@@ -2,12 +2,19 @@ import { ImageResponse } from "next/og";
 import Card from "@/app/components/Card";
 import { NextRequest } from "next/server";
 
+interface State {
+  count: number;
+  incs: number;
+  decs: number;
+  clicks: number;
+}
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const serializedState = searchParams.get("state");
-  let state;
+  let state : State;
   if (serializedState) {
-    state = JSON.parse(decodeURIComponent(serializedState));
+    state = JSON.parse(serializedState);
   } else {
     state = {
       count: 0,
