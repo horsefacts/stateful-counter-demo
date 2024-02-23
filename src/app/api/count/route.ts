@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
   const newState = deriveState(state, buttonIndex);
   const postUrl = `${HOST}/api/count`;
-  const imageUrl = `${HOST}/api/count?state=${encodeURIComponent(JSON.stringify(newState))}`;
+  const imageUrl = `${HOST}/api/images/count?state=${encodeURIComponent(JSON.stringify(newState))}`;
 
   let buttons = [
     `<meta name="fc:frame:button:1" content="+" />`,
