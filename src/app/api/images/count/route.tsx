@@ -9,6 +9,8 @@ interface State {
   clicks: number;
 }
 
+export const runtime = "edge";
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const serializedState = searchParams.get("state");
