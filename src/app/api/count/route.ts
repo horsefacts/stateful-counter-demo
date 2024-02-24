@@ -7,9 +7,28 @@ interface State {
   clicks: number;
 }
 
+type Action = 'inc' | 'dec';
+
 const HOST = process.env["HOST"] ?? "https://stateful-counter-demo.vercel.app";
 
-function deriveState(serializedState: string | undefined, buttonIndex: number) {
+function deriveState(state: State, action: Action) {
+  if (action === 'inc') {
+    state.count++;
+    state.incs++;
+  }
+  if (action === 'dec' && state.count > 0) {
+    state.count--;
+    state.decs++;
+  }
+  state.clicks++;
+  return state;
+}
+
+export async function POST(req: NextRequest) {
+  const {
+    untrustedData: { buttonIndex, state: serializedState },
+  } = await req.json();
+
   let state : State;
   if (!serializedState) {
     state = {
@@ -21,34 +40,25 @@ function deriveState(serializedState: string | undefined, buttonIndex: number) {
   } else {
     state = JSON.parse(decodeURIComponent(serializedState));
   }
-  if (buttonIndex === 1) {
-    state.count++;
-    state.incs++;
-  }
-  if (buttonIndex === 2) {
-    state.count--;
-    state.decs++;
-  }
-  state.clicks++;
-  return state;
-}
 
-export async function POST(req: NextRequest) {
-  const {
-    untrustedData: { buttonIndex, state },
-  } = await req.json();
+  let action : Action;
+  if (state.count === 0) {
+    action = 'inc';
+  } else {
+    action = buttonIndex === 1 ? 'inc' : 'dec';
+  }
 
-  const newState = deriveState(state, buttonIndex);
+  const newState = deriveState(state, action);
+
   const postUrl = `${HOST}/api/count`;
   const imageUrl = `${HOST}/api/images/count?state=${encodeURIComponent(JSON.stringify(newState))}`;
 
-  let buttons = [
-    `<meta name="fc:frame:button:1" content="+" />`,
+  const buttons = (state.count > 0) ? [
+    '<meta name="fc:frame:button:1" content="-" />',
+    '<meta name="fc:frame:button:2" content="+" />',
+  ] : [
+    '<meta name="fc:frame:button:1" content="+" />',
   ];
-
-  if (newState.count > 0) {
-    buttons.push(`<meta name="fc:frame:button:2" content="-" />`);
-  }
 
   return new NextResponse(
     `<!DOCTYPE html>
