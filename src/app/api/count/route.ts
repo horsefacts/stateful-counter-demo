@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   if (state.count === 0) {
     action = 'inc';
   } else {
-    action = buttonIndex === 1 ? 'inc' : 'dec';
+    action = buttonIndex === 1 ? 'dec' : 'inc';
   }
 
   const newState = deriveState(state, action);
