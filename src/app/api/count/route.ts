@@ -9,7 +9,7 @@ interface State {
 
 type Action = 'inc' | 'dec';
 
-const HOST = process.env["HOST"] ?? "https://stateful-counter-demo.vercel.app";
+const HOST = process.env["HOST"] ?? "https://stateful-counter-frame.vercel.app";
 
 function deriveState(state: State, action: Action) {
   if (action === 'inc') {
