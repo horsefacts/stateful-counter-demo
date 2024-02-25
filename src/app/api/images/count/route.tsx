@@ -14,7 +14,7 @@ export const runtime = "edge";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const serializedState = searchParams.get("state");
-  let state : State;
+  let state: State;
   if (serializedState) {
     state = JSON.parse(serializedState);
   } else {
@@ -28,15 +28,31 @@ export async function GET(req: NextRequest) {
   return new ImageResponse(
     (
       <Card>
-        <h1 style={{ color: "#8a63d2", fontSize: 96 }}>{state.count}</h1>
-        <div style={{ display: "flex" }}>
-          {JSON.stringify(state, null, 2)}
+        <div
+          style={{
+            color: "white",
+            fontStyle: "normal",
+            letterSpacing: "-0.025em",
+            lineHeight: 1.4,
+            marginTop: 10,
+            padding: "0 120px",
+            whiteSpace: "pre-wrap",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h1 style={{ fontSize: 200 }}>{state.count}</h1>
+          <div style={{ display: "flex", flexDirection: "column", fontSize: 36, marginLeft: 200 }}>
+            {JSON.stringify(state, null, 2)}
+          </div>
         </div>
       </Card>
     ),
     {
       width: 800,
       height: 420,
-    },
+    }
   );
 }

@@ -2,14 +2,15 @@ export default function Card({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        justifyContent: "center",
         alignItems: "center",
+        background: "linear-gradient(to right, #432889, #17101F)",
+        backgroundSize: "100% 100%",
         display: "flex",
         flexDirection: "column",
-        width: "100%",
+        flexWrap: "nowrap",
         height: "100%",
-        backgroundColor: "white",
-        fontSize: 24,
+        justifyContent: "center",
+        width: "100%",
       }}
     >
       {children}
