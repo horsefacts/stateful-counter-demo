@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as jose from "jose";
+import { randomUUID } from "crypto";
 
 interface State {
   count: number;
@@ -15,7 +16,7 @@ const JWS_SECRET = process.env["JWS_SECRET"] ?? "";
 
 async function encodeState(state: State) {
   return await new jose.CompactSign(
-    new TextEncoder().encode(JSON.stringify(state))
+    new TextEncoder().encode(JSON.stringify({ ...state, nonce: randomUUID() }))
   )
     .setProtectedHeader({ alg: "HS256" })
     .sign(Buffer.from(JWS_SECRET, "hex"));
@@ -26,7 +27,8 @@ async function verifyState(encodedState: string): Promise<State> {
     encodedState,
     Buffer.from(JWS_SECRET, "hex")
   );
-  return JSON.parse(new TextDecoder().decode(payload));
+  const { nonce, ...state } = JSON.parse(new TextDecoder().decode(payload));
+  return state;
 }
 
 function deriveState(state: State, action: Action) {
