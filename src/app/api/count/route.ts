@@ -11,7 +11,7 @@ interface State {
 type Action = "inc" | "dec";
 
 const HOST = process.env["HOST"] ?? "https://stateful-counter-frame.vercel.app";
-const JWS_SECRET = process.env["JWS_SECRET"] ?? "7c2822052124d31aff5cfbf7f2e91bd318a3a7860b9557a11b644db8b141f317";
+const JWS_SECRET = process.env["JWS_SECRET"] ?? "";
 
 async function encodeState(state: State) {
   return await new jose.CompactSign(
@@ -22,7 +22,6 @@ async function encodeState(state: State) {
 }
 
 async function verifyState(encodedState: string): Promise<State> {
-  encodedState = "eyJhbGciOiJIUzI1NiJ0.eyJjb3VudCI6MSwiaW5jcyI6MSwiZGVjcyI6MCwiY2xpY2tzIjoxfQ.33MLPIWBg1DFYzVJV08gDDKuPjUWgCEqXlArjI9O4we";
   const { payload } = await jose.compactVerify(
     encodedState,
     Buffer.from(JWS_SECRET, "hex")
@@ -49,14 +48,8 @@ export async function POST(req: NextRequest) {
   } = await req.json();
 
   let state: State;
+  console.log(serializedState);
   if (!serializedState) {
-    try {
-    state = await verifyState(serializedState);
-    } catch (e: any) {
-      if (e?.code === "ERR_JWS_INVALID") {
-        return new NextResponse("Invalid state", { status: 400 });
-      }
-    }
     state = {
       count: 0,
       incs: 0,
@@ -64,7 +57,15 @@ export async function POST(req: NextRequest) {
       clicks: 0,
     };
   } else {
-    state = await verifyState(serializedState);
+    try {
+      state = await verifyState(serializedState);
+    } catch (e: any) {
+      if (e?.code === "ERR_JWS_INVALID") {
+        return new NextResponse("Invalid state", { status: 400 });
+      } else {
+        return new NextResponse("Internal server error", { status: 500 });
+      }
+    }
   }
 
   let action: Action;
