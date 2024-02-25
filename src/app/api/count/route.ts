@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
   } = await req.json();
 
   let state: State;
-  console.log(serializedState);
   if (!serializedState) {
     state = {
       count: 0,
