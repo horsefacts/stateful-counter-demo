@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
           }}
         >
           <h1 style={{ fontSize: 200 }}>{state.count}</h1>
-          <div style={{ display: "flex", flexDirection: "column", fontSize: 36, marginLeft: 200 }}>
+          <div style={{ display: "flex", flexDirection: "column", fontSize: 36, marginLeft: 150 }}>
             {JSON.stringify(state, null, 2)}
           </div>
         </div>
